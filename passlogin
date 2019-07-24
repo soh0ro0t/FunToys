@@ -1,0 +1,17 @@
+#!/usr/bin/expect -f
+
+if {[llength $argv] < 4} {
+  send_user "Usage: passlogin ip(NEEDED) port(NEEDED) user(NEEDED) pass(NEEDED) \n"
+  exit 1
+}
+
+set timeout 5
+set HOST [lindex $argv 0]
+set PORT [lindex $argv 1]
+set USER [lindex $argv 2]
+set PASS [lindex $argv 3]
+
+spawn ssh ${USER}@${HOST} -p${PORT}
+expect "${USER}@${HOST}'s password:"
+send -- "${PASS}\r"
+interact
