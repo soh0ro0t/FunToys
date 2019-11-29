@@ -186,7 +186,7 @@ Display() {
 # Returns     : <nothing>
 ################################################################################
 PEMCert2CACertForAndroid() {
-    Display --text "convert regulate PEM-formatted self-signed certificate to root CA certificate for android device"
+    Display --text "[+] convert regulate PEM-formatted self-signed certificate to root CA certificate for android device"
     step1="MD5Value=openssl x509 -inform pem -in SAMPLE.crt -subject_hash_old | head -1"    
     step2="cat SAMPLE.crt > MD5Value.0"
     step3="openssl x509 -inform pem -in MD5Value.0 -noout -text >> MD5Value.0"
@@ -205,7 +205,7 @@ PEMCert2CACertForAndroid() {
 # Returns     : <nothing>
 ################################################################################
 CheckSignVersionForAPK() {
-    Display --text "determinate signature scheme version for an apk file"
+    Display --text "[+] determinate signature scheme version for an apk file"
     step1="apksigner verify -v sample.apk"    
 
     Display --indent 4 --text "command: " --color RED --result "${step1}"
@@ -219,7 +219,7 @@ CheckSignVersionForAPK() {
 # Returns     : <nothing>
 ################################################################################
 OpensslGenKeyAndCert() {
-    Display --text "generate private key and the corresponding certificate using openssl"
+    Display --text "[+] generate private key and the corresponding certificate using openssl"
     step1="openssl req -newkey rsa:2048 -nodes -keyout ca.key -x509 -days 365 -out ca.crt"
 
     Display --indent 4 --text "command: " --color RED --result "${step1}"
@@ -233,7 +233,7 @@ OpensslGenKeyAndCert() {
 # Returns     : <nothing>
 ################################################################################
 GitDiscardLocalModification() {
-    Display --text "numerous cases for discarding local changes in git"
+    Display --text "[+] numerous cases for discarding local changes in git"
 
     Display --indent 4 --text "discard local changes if they have not been added yet (Note: can not delete newly created file, just delete them manually)"
     nonAddFileDiscard="git checkout -- changedfile"    
@@ -264,7 +264,7 @@ GitDiscardLocalModification() {
 # Returns     : <kernel version>
 ################################################################################
 GetKernelVersion() {
-    Display --text "get kernel version from compressed kernel image"
+    Display --text "[+] get kernel version from compressed kernel image"
 
 	step1="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o \$'\\\x1f\\\x8b\\\x08\\\x00\\\x00\\\x00\\\x00\\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | zcat | grep -a 'Linux version'"	
     Display --indent 4 --text "extract from gzip-encoded image: " --color RED --result "${step1}"
@@ -281,7 +281,7 @@ GetKernelVersion() {
 # Returns     : <systemPermEnabled.apk>
 ################################################################################
 SignUserApkAsSystem() {
-    Display --text "Sign a user level app as a system permission enabled app"
+    Display --text "[+] Sign a user level app as a system permission enabled app"
 
 	step1="openssl pkcs8 -in platform.pk8 -inform DER -outform PEM -out shared.priv.pem -nocrypt"
     Display --indent 4 --text "convert DER-formatted private key to PEM-formatted key" --color RED --result "${step1}"
@@ -297,6 +297,40 @@ SignUserApkAsSystem() {
     echo "\n"
 }
 
+################################################################################
+# Name        : PackTargzArchive()
+# Description : By default, pigz uses the number of available cores, or eight 
+#               if it could not query that. You can ask for more with -p n, e.g. 
+#               -p 32. pigz has the same options as gzip, so you can request better 
+#               compression with -9. E.g.
+# Input       : <directory for compression>
+# Returns     : <compressed package>
+################################################################################
+PackTargzArchive() {
+    Display --text "[+] pack .tar.gz formatted file with better compression and multiple cores"
+
+    step1="tar cf - paths-to-archive | pigz -9 -p 32 > archive.tar.gz"  
+    Display --indent 4 --text "prioritized: " --color RED --result "${step1}"
+
+    step2="tar -c --use-compress-program=pigz -f archive.tar.gz paths-to-archive" 
+    Display --indent 4 --text "secondary: " --color RED --result "${step2}"
+    echo "\n"
+}
+
+################################################################################
+# Name        : FastTransmitOverSsh()
+# Description : The best way for transmitting file over ssh protocol, it can support
+#               resuming from break-point and comression transmition
+# Input       : <directory for compression>
+# Returns     : <compressed package>
+################################################################################
+FastTransmitOverSsh() {
+    Display --text "[+] resuming from break-point and comression transmition via rsync over SSH protocol"
+    step1="spawn rsync -avzP -e 'ssh -pPORT' USER@$HOST:/PATH-TO-SOURCE /PATH-TO-LOCAL"  
+    Display --indent 4 --text "command: " --color RED --result "${step1}"
+    echo "\n"
+}
+
 PEMCert2CACertForAndroid
 
 SignUserApkAsSystem
@@ -308,3 +342,7 @@ OpensslGenKeyAndCert
 GitDiscardLocalModification
 
 GetKernelVersion
+
+PackTargzArchive
+
+FastTransmitOverSsh
