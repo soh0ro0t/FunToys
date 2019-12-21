@@ -12,7 +12,7 @@ Showing a branch of high-frequently used linux command in shell syntax.
 
 ### passlogin
 Login remote ssh server with password in one time.
-![passlogin](http://url/to/img.png)
+![passlogin](https://github.com/TheBeeMan/FunToys/blob/master/images/passlogin.png?raw=true)
 
 ### zdd
 zdd is the same with dd command except implemented with python, while it's more stable when operates on a big data object.
