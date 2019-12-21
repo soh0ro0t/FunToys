@@ -1,5 +1,5 @@
 # FunToys
-A collection of interesting and useful tool, it is for ease of use, it will make life easier.
+A collection of interesting and useful tool, it is for ease of use, it will make life easier, and they are mostly written either python or shell.
 
 # Feature:
 ### zcolor
