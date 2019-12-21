@@ -21,3 +21,8 @@ Login remote ssh server with password in one time.
 zdd is the same with dd command except implemented with python, while it's more stable when operates on a big data object.
 
 ![passlogin](https://github.com/TheBeeMan/FunToys/blob/master/images/zdd.png?raw=true)
+
+###gencert
+Create CA key-pair and server key-pair signed by CA
+
+![gencert](https://github.com/TheBeeMan/FunToys/blob/master/images/cert.png?raw=true)
