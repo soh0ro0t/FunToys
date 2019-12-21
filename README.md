@@ -16,4 +16,4 @@ Login remote ssh server with password in one time.
 
 ### zdd
 zdd is the same with dd command except implemented with python, while it's more stable when operates on a big data object.
-![passlogin](http://url/to/img.png)
+![passlogin](https://github.com/TheBeeMan/FunToys/blob/master/images/zdd.png?raw=true)
