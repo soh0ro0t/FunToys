@@ -1,4 +1,4 @@
-#!/bin/sh
+i#!/bin/sh
 
 SHOW_WARNINGS_ONLY=0
 QUIET=0
@@ -331,6 +331,35 @@ FastTransmitOverSsh() {
     echo "\n"
 }
 
+################################################################################
+# Name        : GitManagerOverSpecKey()
+# Description : Manage your github with specific SSH credentials, including a pair of 
+#               public key and private key, configure your private key for further operation 
+# Input       : <private key file path>
+# Returns     : <nothing>
+################################################################################
+GitManagerOverSpecKey() {
+    Display --text "[+] Enter your local git project folder, and then configure your github repo with a specific SSH credentials"
+    step1="git config core.sshCommand \"ssh -i ~/.ssh/your_private_key  -o 'IdentitiesOnly yes'\""  
+    Display --indent 4 --text "configure credential: " --color RED --result "${step1}"
+    step2="git config user.email \"thebeemangg@gmail.com\" ; git config user.name \"soh0ro0t\""  
+    Display --indent 4 --text "configure user: " --color RED --result "${step2}"
+    echo "\n"
+}
+
+################################################################################
+# Name        : RegexOfIpv4Addr()
+# Description : A regex expression of ipv4 address which is widely used. 
+# Input       : <nothing> 
+# Returns     : <nothing>
+################################################################################
+RegexOfIpv4Addr() {
+    Display --text "[+] A regex expression of ipv4 address which is widely used"
+    step1="(25[0-5]|[2[0-4][0-9]|[01]?[0-9][0-9]?])(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"  
+    Display --indent 4 --text "regex" --color RED --result "${step1}"
+    echo "\n"
+}
+
 PEMCert2CACertForAndroid
 
 SignUserApkAsSystem
@@ -346,3 +375,7 @@ GetKernelVersion
 PackTargzArchive
 
 FastTransmitOverSsh
+
+GitManagerOverSpecKey
+
+RegexOfIpv4Addr
