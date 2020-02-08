@@ -1,4 +1,4 @@
-i#!/bin/sh
+#!/bin/bash
 
 SHOW_WARNINGS_ONLY=0
 QUIET=0
@@ -153,7 +153,7 @@ Display() {
 
     if [ ! -z "${TEXT}" ]; then
         SHOW=0
-        TEXTPART="${BLUE}${TEXT}${NORMAL}" 
+        TEXTPART="${BLUE}${TEXT}${NORMAL}"
         if [ ${SHOW_WARNINGS_ONLY} == 1 ]; then
             if [ "${RESULT}" = "WARNING" ]; then SHOW=1; fi
         elif [ ${QUIET} == 0 ]; then SHOW=1
@@ -181,20 +181,20 @@ Display() {
 ################################################################################
 # Name        : PEMCert2CACertForAndroid()
 # Description : Show operations that convert regulate pem certificate generate
-#               from openssl to root CA certificate for android system. 
+#               from openssl to root CA certificate for android system.
 # Input       : <nothing>
 # Returns     : <nothing>
 ################################################################################
 PEMCert2CACertForAndroid() {
     Display --text "[+] convert regulate PEM-formatted self-signed certificate to root CA certificate for android device"
-    step1="MD5Value=openssl x509 -inform pem -in SAMPLE.crt -subject_hash_old | head -1"    
+    step1="MD5Value=openssl x509 -inform pem -in SAMPLE.crt -subject_hash_old | head -1"
     step2="cat SAMPLE.crt > MD5Value.0"
     step3="openssl x509 -inform pem -in MD5Value.0 -noout -text >> MD5Value.0"
 
     Display --indent 4 --text "command: " --color RED --result "${step1}"
     Display --indent 4 --text "command: " --color RED --result "${step2}"
     Display --indent 4 --text "command: " --color RED --result "${step3}"
-    
+
     echo "\n"
 }
 
@@ -206,7 +206,7 @@ PEMCert2CACertForAndroid() {
 ################################################################################
 CheckSignVersionForAPK() {
     Display --text "[+] determinate signature scheme version for an apk file"
-    step1="apksigner verify -v sample.apk"    
+    step1="apksigner verify -v sample.apk"
 
     Display --indent 4 --text "command: " --color RED --result "${step1}"
     echo "\n"
@@ -214,7 +214,7 @@ CheckSignVersionForAPK() {
 
 ################################################################################
 # Name	      : OpensslGenKeyAndCert()
-# Description : generate private key and the corresponding certificate using openssl 
+# Description : generate private key and the corresponding certificate using openssl
 # Input       : <nothing>
 # Returns     : <nothing>
 ################################################################################
@@ -236,47 +236,47 @@ GitDiscardLocalModification() {
     Display --text "[+] numerous cases for discarding local changes in git"
 
     Display --indent 4 --text "discard local changes if they have not been added yet (Note: can not delete newly created file, just delete them manually)"
-    nonAddFileDiscard="git checkout -- changedfile"    
-    nonAddFoldDiscard="git checkout ."    
+    nonAddFileDiscard="git checkout -- changedfile"
+    nonAddFoldDiscard="git checkout ."
     Display --indent 8 --text "discard changes for given file" --color RED --result "${nonAddFileDiscard}"
     Display --indent 8 --text "discard changes under given folder" --color RED --result "${nonAddFoldDiscard}"
 
     Display --indent 4 --text "discard local changes if they have been added while not committed"
-    addedFileUnstage="git reset HEAD -- changedfile"    
-    nonAddFileDiscard="git checkout -- changedfile"    
+    addedFileUnstage="git reset HEAD -- changedfile"
+    nonAddFileDiscard="git checkout -- changedfile"
     Display --indent 8 --text "unstage added files and discard changes" --color RED --result "${addedFileUnstage}; ${nonAddFileDiscard}"
-    addedFoldUnstage="git reset HEAD ."    
-    nonAddFoldDiscard="git checkout ."    
+    addedFoldUnstage="git reset HEAD ."
+    nonAddFoldDiscard="git checkout ."
     Display --indent 8 --text "unstage added folder and discard changes" --color RED --result "${addedFoldUnstage}; ${nonAddFoldDiscard}"
 
     Display --indent 4 --text "discard local changes if they have been committed"
-    backToLastState="git reset --hard HEAD^"    
+    backToLastState="git reset --hard HEAD^"
     Display --indent 8 --text "go back to last state" --color RED --result "${backToLastState}"
-    backToSpecificState="git reset --hard commtid"    
+    backToSpecificState="git reset --hard commtid"
     Display --indent 8 --text "go back to specific state by given commit id" --color RED --result "${backToSpecificState}"
     echo "\n"
 }
 
 ################################################################################
 # Name	      : GetKernelVersion()
-# Description : Get kernel version from compressed kernel image 
+# Description : Get kernel version from compressed kernel image
 # Input       : <kernel image>
 # Returns     : <kernel version>
 ################################################################################
 GetKernelVersion() {
     Display --text "[+] get kernel version from compressed kernel image"
 
-	step1="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o \$'\\\x1f\\\x8b\\\x08\\\x00\\\x00\\\x00\\\x00\\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | zcat | grep -a 'Linux version'"	
+	step1="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o \$'\\\x1f\\\x8b\\\x08\\\x00\\\x00\\\x00\\\x00\\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | zcat | grep -a 'Linux version'"
     Display --indent 4 --text "extract from gzip-encoded image: " --color RED --result "${step1}"
 
-	step2="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o \$'\\\xFD\\\x37\\\x7A\\\x58\\\x5A\\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | xzcat | grep -a 'Linux version'"	
+	step2="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o \$'\\\xFD\\\x37\\\x7A\\\x58\\\x5A\\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | xzcat | grep -a 'Linux version'"
     Display --indent 4 --text "extract from xz-encoded image: " --color RED --result "${step2}"
     echo "\n"
 }
 
 ################################################################################
 # Name	      : SignUserApkAsSystem()
-# Description : Sign a user level app as a system permission enabled app  
+# Description : Sign a user level app as a system permission enabled app
 # Input       : <platform.x509.pem, platform.pk8, userSample.apk>
 # Returns     : <systemPermEnabled.apk>
 ################################################################################
@@ -299,9 +299,9 @@ SignUserApkAsSystem() {
 
 ################################################################################
 # Name        : PackTargzArchive()
-# Description : By default, pigz uses the number of available cores, or eight 
-#               if it could not query that. You can ask for more with -p n, e.g. 
-#               -p 32. pigz has the same options as gzip, so you can request better 
+# Description : By default, pigz uses the number of available cores, or eight
+#               if it could not query that. You can ask for more with -p n, e.g.
+#               -p 32. pigz has the same options as gzip, so you can request better
 #               compression with -9. E.g.
 # Input       : <directory for compression>
 # Returns     : <compressed package>
@@ -309,10 +309,10 @@ SignUserApkAsSystem() {
 PackTargzArchive() {
     Display --text "[+] pack .tar.gz formatted file with better compression and multiple cores"
 
-    step1="tar cf - paths-to-archive | pigz -9 -p 32 > archive.tar.gz"  
+    step1="tar cf - paths-to-archive | pigz -9 -p 32 > archive.tar.gz"
     Display --indent 4 --text "prioritized: " --color RED --result "${step1}"
 
-    step2="tar -c --use-compress-program=pigz -f archive.tar.gz paths-to-archive" 
+    step2="tar -c --use-compress-program=pigz -f archive.tar.gz paths-to-archive"
     Display --indent 4 --text "secondary: " --color RED --result "${step2}"
     echo "\n"
 }
@@ -326,36 +326,36 @@ PackTargzArchive() {
 ################################################################################
 FastTransmitOverSsh() {
     Display --text "[+] resuming from break-point and comression transmition via rsync over SSH protocol"
-    step1="spawn rsync -avzP -e 'ssh -pPORT' USER@$HOST:/PATH-TO-SOURCE /PATH-TO-LOCAL"  
+    step1="spawn rsync -avzP -e 'ssh -pPORT' USER@$HOST:/PATH-TO-SOURCE /PATH-TO-LOCAL"
     Display --indent 4 --text "command: " --color RED --result "${step1}"
     echo "\n"
 }
 
 ################################################################################
 # Name        : GitManagerOverSpecKey()
-# Description : Manage your github with specific SSH credentials, including a pair of 
-#               public key and private key, configure your private key for further operation 
+# Description : Manage your github with specific SSH credentials, including a pair of
+#               public key and private key, configure your private key for further operation
 # Input       : <private key file path>
 # Returns     : <nothing>
 ################################################################################
 GitManagerOverSpecKey() {
     Display --text "[+] Enter your local git project folder, and then configure your github repo with a specific SSH credentials"
-    step1="git config core.sshCommand \"ssh -i ~/.ssh/your_private_key  -o 'IdentitiesOnly yes'\""  
+    step1="git config core.sshCommand \"ssh -i ~/.ssh/your_private_key  -o 'IdentitiesOnly yes'\""
     Display --indent 4 --text "configure credential: " --color RED --result "${step1}"
-    step2="git config user.email \"thebeemangg@gmail.com\" ; git config user.name \"soh0ro0t\""  
+    step2="git config user.email \"thebeemangg@gmail.com\" ; git config user.name \"soh0ro0t\""
     Display --indent 4 --text "configure user: " --color RED --result "${step2}"
     echo "\n"
 }
 
 ################################################################################
 # Name        : RegexOfIpv4Addr()
-# Description : A regex expression of ipv4 address which is widely used. 
-# Input       : <nothing> 
+# Description : A regex expression of ipv4 address which is widely used.
+# Input       : <nothing>
 # Returns     : <nothing>
 ################################################################################
 RegexOfIpv4Addr() {
     Display --text "[+] A regex expression of ipv4 address which is widely used"
-    step1="(25[0-5]|[2[0-4][0-9]|[01]?[0-9][0-9]?])(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"  
+    step1="(25[0-5]|[2[0-4][0-9]|[01]?[0-9][0-9]?])(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
     Display --indent 4 --text "regex" --color RED --result "${step1}"
     echo "\n"
 }
