@@ -1,0 +1,292 @@
+##########################################################################
+# File Name: devsearch.sh
+# Author: soh0ro0t
+# mail: thebeemangg@gmail.com
+# Created Time: Wed 23 Dec 2020 03:02:10 PM CST
+#########################################################################
+dev_type="none"
+FILENAME_FOUND=0
+DEVTYPE_FOUND=0
+RAW_FOUND=0
+PREBUILT_DEV_PATH=".*/kernel/drivers"
+
+SHOW_WARNINGS_ONLY=0
+QUIET=0
+CRONJOB=0
+
+# Normal color names
+CYAN="$(printf '\033[0;36m')"
+BLUE="$(printf '\033[0;34m')"
+BROWN="$(printf '\033[0;33m')"
+DARKGRAY="$(printf '\033[0;30m')"
+GRAY="$(printf '\033[0;37m')"
+GREEN="$(printf '\033[1;32m')"
+LIGHTBLUE="$(printf '\033[0;94m')"
+MAGENTA="$(printf '\033[1;35m')"
+PURPLE="$(printf '\033[0;35m')"
+RED="$(printf '\033[1;31m')"
+YELLOW="$(printf '\033[1;33m')"
+WHITE="$(printf '\033[1;37m')"
+# Markup
+BOLD="${WHITE}"
+# With background
+BG_BLUE="$(printf '\033[0;44m')"
+# Semantic names
+HEADER="${WHITE}"
+NORMAL="$(printf '\033[0m')"
+WARNING="${RED}"
+SECTION="${YELLOW}"
+NOTICE="${YELLOW}"
+OK="${GREEN}"
+BAD="${RED}"
+
+################################################################################
+# Name        : RemoveTempFiles()
+################################################################################
+
+# Remove any temporary files
+RemoveTempFiles() {
+    if [ ! "${TEMP_FILES}" = "" ]; then
+        echo "Temporary files: ${TEMP_FILES}"
+        # Clean up temp files
+        for FILE in ${TEMP_FILES}; do
+            # Temporary files should be in /tmp
+            TMPFILE=$(echo ${FILE} | egrep "^/tmp/lynis" | grep -v "\.\.")
+            if [ ! "${TMPFILE}" = "" ]; then
+                if [ -f ${TMPFILE} ]; then
+                    echo "Action: removing temporary file ${TMPFILE}"
+                    rm -f ${TMPFILE}
+                else
+                    echo "Info: temporary file ${TMPFILE} was already removed"
+                fi
+            else
+                echo "Found invalid temporary file (${FILE}), not removed. Check your /tmp directory."
+            fi
+        done
+    else
+        echo "No temporary files to be deleted"
+    fi
+}
+
+
+################################################################################
+# Name        : RemovePIDFile()
+################################################################################
+
+# Remove PID file
+RemovePIDFile() {
+    # Test if PIDFILE is defined, before checking file presence
+    if [ ! "${PIDFILE}" = "" ]; then
+        if [ -f ${PIDFILE} ]; then
+            rm -f $PIDFILE;
+            echo "PID file removed (${PIDFILE})"
+        else
+            echo "PID file not found (${PIDFILE})"
+        fi
+    fi
+}
+
+################################################################################
+# Name        : ExitFatal()
+# Description : Perform exit of the program (with code 1), clean up resources
+#
+# Input       : $1 = text string (optional)
+# Returns     : <nothing>
+# Usage       : ExitFatal
+################################################################################
+
+ExitFatal() {
+    RemovePIDFile
+    RemoveTempFiles
+    echo "${PROGRAM_NAME} ended with exit code 1."
+    if [ $# -eq 1 ]; then
+        ${ECHOCMD} ""
+        ${ECHOCMD} "${RED}Fatal error${NORMAL}: ${WHITE}$1${NORMAL}"
+        ${ECHOCMD} ""
+    fi
+    exit 1
+}
+
+################################################################################
+# Name        : Display()
+# Description : Show text on screen, with markup
+#
+# Input       : <multiple parameters, see test>
+# Returns     : <nothing>
+################################################################################
+
+Display() {
+    INDENT=0; TEXT=""; RESULT=""; COLOR=""; SPACES=0; SHOWDEBUG=0
+    while [ $# -ge 1 ]; do
+        case $1 in
+            --color)
+                shift
+                    case $1 in
+                      GREEN)   COLOR=$GREEN   ;;
+                      RED)     COLOR=$RED     ;;
+                      WHITE)   COLOR=$WHITE   ;;
+                      YELLOW)  COLOR=$YELLOW  ;;
+                    esac
+            ;;
+            --debug)
+                SHOWDEBUG=1
+            ;;
+            --indent)
+                shift
+                INDENT=$1
+            ;;
+            --result)
+                shift $(( $# > 0 ? 1 : 0 ))
+                RESULT=$1
+            ;;
+            --text)
+                shift $(( $# > 0 ? 1 : 0 ))
+                TEXT=$1
+            ;;
+            *)
+                echo "INVALID OPTION (Display): $1"
+                ExitFatal
+            ;;
+        esac
+        # Go to next parameter
+        shift $(( $# > 0 ? 1 : 0 ))
+    done
+
+    if [ -z "${RESULT}" ]; then
+        RESULTPART=""
+    else
+        if [ ${CRONJOB} -eq 0 ]; then
+            RESULTPART=" [ ${COLOR}${RESULT}${NORMAL} ]"
+        else
+            RESULTPART=" [ ${RESULT} ]"
+        fi
+    fi
+
+    if [ ! -z "${TEXT}" ]; then
+        SHOW=0
+        TEXTPART="${BLUE}${TEXT}${NORMAL}"
+        if [ ${SHOW_WARNINGS_ONLY} == 1 ]; then
+            if [ "${RESULT}" = "WARNING" ]; then SHOW=1; fi
+        elif [ ${QUIET} == 0 ]; then SHOW=1
+        fi
+
+        if [ ${SHOW} -eq 1 ]; then
+            # Display:
+            # - for full shells, count with -m instead of -c, to support language locale (older busybox does not have -m)
+            # - wc needs LANG to deal with multi-bytes characters but LANG has been unset in include/consts
+            LINESIZE=$(export LC_ALL= ; export LANG="${Display_LANG}";echo "${TEXT}" | wc -m | tr -d ' ')
+            if [ ${SHOWDEBUG} -eq 1 ]; then DEBUGTEXT=" [${PURPLE}DEBUG${NORMAL}]"; else DEBUGTEXT=""; fi
+            if [ ${INDENT} -gt 0 ]; then SPACES=$((62 - INDENT - LINESIZE)); fi
+            if [ ${SPACES} -lt 0 ]; then SPACES=0; fi
+            if [ ${CRONJOB} -eq 0 ]; then
+                # Check if we already have already discovered a proper echo command tool. It not, set it default to 'echo'.
+                if [ "${ECHOCMD}" = "" ]; then ECHOCMD="echo"; fi
+                ${ECHOCMD} -e "\033[${INDENT}C${TEXTPART}\033[${SPACES}C${RESULTPART}${DEBUGTEXT}"
+            else
+                echo "${TEXT}${RESULTPART}"
+            fi
+        fi
+    fi
+}
+
+
+usage() {
+        Display --indent 4 --text "Usage: devsearch.sh source_dir dev_name [dev_type]" --color RED --result ""
+}
+
+
+if [[ $# -gt 2 ]]; then
+        dir=$1
+        dev=$2
+        dev_type=$3
+elif [[ $# -eq 2 ]];then
+        dir=$1
+        dev=$2
+else
+        usage 
+fi
+
+search_by_filename() {
+        filename=$1
+        command="find $dir -type f -iname $filename.c 2>/dev/null"
+        Display --indent 4 --text "[+] search by filename" --color RED --result ""
+        Display --indent 8 --text "[+] $command" --color RED --result ""
+        result="$(eval $command)"
+        if [ $? -eq 0 ];then
+                Display --indent 4 --text "[+] $result" --color RED --result ""
+                FILENAME_FOUND=1
+                return 
+        fi
+}
+
+search_by_devtype() {
+        dev_type=$1
+        Display --indent 4 --text "[+] search by device type" --color BLUE --result ""
+        if [ "dev_type"== *"character"* ];then
+                # try to search misc device register code snippet 
+                result=$(find $dir -path ".*/kernel/drivers"  -exec grep -r  -E 'misc_register\(&"$filename"'  {} \;)
+                if [ $? -eq 0 ];then
+                        Display --indent 4 --text "[+] $result" --color BLUE --result ""
+                        DEVTYPE_FOUND=1
+                        return
+                fi
+        else
+                Display --indent 4 --text "[!] cannot search by given type" --color RED --result ""
+        fi
+
+}
+
+search_by_force() {
+        target=$1
+        # search by name assignment snippet code
+        result=$(find $dir -type f -regextype posix-extended -regex '.*\.(c|h)' -exec grep 'name = "$target"' {} \;)
+        if [ $? -eq 0 ];then
+                Display --indent 4 --text "[+] $result" --color BLUE --result ""
+                RAW_FOUND=1
+                return
+        else
+                # some driver uses specific MACRO to imply its name
+                DEV=${dev^^}
+                result=$(find $dir -path ".*/kernel/drivers"  -exec grep -r -l -E "$DEV"_DEVICE_NAME {} \;)
+                if [ $? -eq 0 ];then
+                        Display --indent 4 --text "[+] $result" --color BLUE --result ""
+                        RAW_FOUND=1
+                        return
+                fi
+
+                # blute force searching
+                result=$(find $dir -type f -regextype posix-extended -regex '.*\.(c|h)' -exec grep 'name = \""$dev"\"' {} \;)
+                if [ $? -eq 0 ];then
+                        Display --indent 4 --text "[+] $result" --color BLUE --result ""
+                        RAW_FOUND=1
+                        return
+                else
+                        # some driver uses specific MACRO to imply its name
+                        DEV=${dev^^}
+                        result=$(find $dir -path ".*/kernel/drivers"  -exec grep -r -l -E "$DEV"_DEVICE_NAME {} \;)
+                        if [ $? -eq 0 ];then
+                                Display --indent 4 --text "[+] $result" --color BLUE --result ""
+                                RAW_FOUND=1
+                                return
+                        fi
+
+                        # blute force searching
+                        result=$(find $dir -type f -regextype posix-extended -regex '.*\.(c|h)' -exec grep 'name = \""$dev"\"' {} \;)
+                fi
+        fi
+}
+
+search_by_filename $dev
+if [[ $FILENAME_FOUND -eq 1 ]];then
+        exit 0
+fi
+
+search_by_devtype $dev
+if [[ $DEVTYPE_FOUND -eq 1 ]];then
+        exit 0
+fi
+
+search_by_force $dev
+if [[ $RAW_FOUND -eq 1 ]];then
+        exit 0
+fi
