@@ -1,6 +1,6 @@
 
-1. bytes to string
-python:
+## 1. bytes to string
+### in python:
 ```py
 import binascii
 
@@ -9,7 +9,7 @@ test_bin2 = b'\x11\x22'
 binascii.hexlify(test_bin1).decode() # '313233'
 binascii.hexlify(test_bin2).decode() # '1122'
 ```
-java:
+### in java:
 ```java
     public static String toHexString(byte[] arg5) {
         if(arg5 == null) {
@@ -33,12 +33,13 @@ java:
     }
 ```
 
-2. string to bytes
-python：
+## 2. string to bytes
+### in python：
 ```py
 test_bin1 = 'aabbccdd'
 bytes.fromhex(test_bin1) # b'\xaa\xbb\xcc\xdd'
 ```
+### in java:
 ```java
     public static byte[] hexToBytes(String arg6) {
         if(arg6 == null) {
