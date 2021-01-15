@@ -56,8 +56,8 @@ bytes.fromhex(test_bin1) # b'\xaa\xbb\xcc\xdd'
             try {
                 v1[index] = ((byte)Integer.parseInt(arg6.substring(v4, v5), 16));
             }
-            catch(NumberFormatException ) {
-                drt.a("HEXUtils", new Object[]{"hexToBytes NumberFormatException"});
+            catch(NumberFormatException e) {
+                drt.a("HEXUtils", e.getMessage());
             }
         }
 
