@@ -10,6 +10,10 @@ test_bin1 = b'123'
 test_bin2 = b'\x11\x22'
 binascii.hexlify(test_bin1).decode() # '313233'
 binascii.hexlify(test_bin2).decode() # '1122'
+
+或者
+
+test_bin1.hex()
 ```
 ### in java:
 ```java
