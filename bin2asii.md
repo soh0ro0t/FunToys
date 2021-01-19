@@ -34,7 +34,7 @@ binascii.hexlify(test_bin2).decode() # '1122'
         return v0.toString().toUpperCase(Locale.US).trim();
     }
 
-    public static String c(String str) {
+    public static String stringToHex(String str) {
         if (str == null) {
             drt.e("HEXUtils", "stringToHex string is null");
             return "";
