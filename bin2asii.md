@@ -1,6 +1,6 @@
 
 ## 1. bytes to hex string
-将bytes在内存中的数据按照可显示的16进制字符串的形式显示出来，转换后数据长度扩展到2倍。
+将bytes在内存中的数据按照16进制字符串的形式显示出来，转换后数据长度扩展到2倍。
 
 ### in python:
 ```py
@@ -14,6 +14,7 @@ binascii.hexlify(test_bin2).decode() # '1122'
 或者
 
 test_bin1.hex()
+
 ```
 ### in java:
 ```java
@@ -37,27 +38,6 @@ test_bin1.hex()
 
         return v0.toString().toUpperCase(Locale.US).trim();
     }
-
-    public static String stringToHex(String str) {
-        if (str == null) {
-            drt.e("HEXUtils", "stringToHex string is null");
-            return "";
-        }
-        char[] charArray = "0123456789ABCDEF".toCharArray();
-        StringBuilder sb = new StringBuilder("");
-        byte[] bArr = new byte[0];
-        try {
-            bArr = str.getBytes("utf-8");
-        } catch (UnsupportedEncodingException unused) {
-            drt.a("HEXUtils", "stringToHex UnsupportedEncodingException");
-        }
-        for (int i = 0; i < bArr.length; i++) {
-            sb.append(charArray[(bArr[i] & 240) >> 4]);
-            sb.append(charArray[bArr[i] & 15]);
-        }
-        return sb.toString().trim();
-    }
-
 ```
 
 ## 2. hex string to bytes
@@ -91,3 +71,34 @@ bytes.fromhex(test_bin1) # b'\xaa\xbb\xcc\xdd'
         return v1;
     }
 ```
+
+## 3. string to hexstring 
+### inpython:
+```py
+test_str = '123'
+test_str.encode().hex() # '313233'
+```
+
+### in java:
+```java
+    public static String stringToHex(String str) {
+        if (str == null) {
+            drt.e("HEXUtils", "stringToHex string is null");
+            return "";
+        }
+        char[] charArray = "0123456789ABCDEF".toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        byte[] bArr = new byte[0];
+        try {
+            bArr = str.getBytes("utf-8");
+        } catch (UnsupportedEncodingException unused) {
+            drt.a("HEXUtils", "stringToHex UnsupportedEncodingException");
+        }
+        for (int i = 0; i < bArr.length; i++) {
+            sb.append(charArray[(bArr[i] & 240) >> 4]);
+            sb.append(charArray[bArr[i] & 15]);
+        }
+        return sb.toString().trim();
+    }
+```
+
