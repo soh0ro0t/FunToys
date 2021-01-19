@@ -56,7 +56,7 @@ binascii.hexlify(test_bin2).decode() # '1122'
 
 ```
 
-## 2. string to bytes
+## 2. hex string to bytes
 ### in python：
 ```py
 test_bin1 = 'aabbccdd'
