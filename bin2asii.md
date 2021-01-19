@@ -1,5 +1,5 @@
 
-## 1. represents bytes as ascii-stype hex string
+## 1. bytes to hex string
 将bytes在内存中的数据按照可显示的16进制字符串的形式显示出来，转换后数据长度扩展到2倍。
 
 ### in python:
