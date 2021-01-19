@@ -16,6 +16,7 @@
 ```
 
 ### 二、frida hook java类
+该方法从java的内存中获取所有的匹配该类型的instance，类似于强制搜索。
 ```js
     1 	//Find an instance of the class and call "secret" function.
     2 	Java.choose("com.example.my_activity", {
@@ -27,7 +28,7 @@
     8 	});
 ```
 	        
-### 三、frida 通过反射获取所有成员变量（这个用例困扰了很久）
+### 三、frida 通过反射获取实例所有成员变量
 ```js
     1 	var fields = Java.cast(this.getClass(),Java.use('java.lang.Class')).getDeclaredFields();
     2 	console.log(fields);
@@ -72,7 +73,8 @@
     6 	}
 ```	
 	
-### 五、如果同一个类中存在同名函数，可以通过函数参数进行类型匹配获取该方法
+### 五、如果同一个类中存在同名函数，如何过滤？
+可以通过函数参数进行类型匹配获取该方法。
 ```js    
     1 	function dynamic_search_method(io_object, iv_name, iv_ret_type, it_par){ 
     2 	    var lt_methods = io_object.getMethods()  ;
