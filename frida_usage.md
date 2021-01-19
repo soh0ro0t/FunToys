@@ -112,3 +112,14 @@
    35 	    return io_method.invoke(lo_cast_obj,lt_par);
    36 	}
 ```
+如何调用？
+```js
+        var b_meth = dynamic_search_method(jODgb.class, "b", "java.lang.String", ["int"]);
+        console.log((new Date().getTime()) + "|" + ">>>> soh0ro0t|D|b_meth|" + \
+        "{" + b_meth + "}");
+
+        var Integer = Java.use("java.lang.Integer");
+        // 首先要加上.class获取clazz类，其次传入int的参数要用Integer.valueof(x)
+        var test = dynamic_invoke(jODgb.class, b_meth, [Integer.valueOf(7)]);
+```
+
