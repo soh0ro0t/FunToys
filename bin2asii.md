@@ -1,3 +1,10 @@
+## 0. bytes2string
+### in python
+```py
+test_str = "123"
+b_test_str = test_str.encode() # b"132"
+b_test_str.decode() # "123"
+```
 
 ## 1. bytes to hex string
 将bytes在内存中的数据按照16进制字符串的形式显示出来，转换后数据长度扩展到2倍。
@@ -41,6 +48,8 @@ test_bin1.hex()
 ```
 
 ## 2. hex string to bytes
+hex字符串还原成hex字节数组，数组长度减半，即从可显示的16进制字符串变成16进制的二进制数据。
+
 ### in python：
 ```py
 test_bin1 = 'aabbccdd'
