@@ -80,7 +80,6 @@
     2 	    var lt_methods = io_object.getMethods()  ;
     3 	    var lv_found;
     4 	    for(var lv_i=0; lv_i < lt_methods.length; lv_i++){
-    5 	        console.log("name:" + lt_methods[lv_i].getName().toString() + ", ret:" + lt_methods[lv_i].getGenericReturnType().toString());
     6 	        //if (lt_methods[lv_i].getName().toString() == iv_name && lt_methods[lv_i].getGenericReturnType().toString() == iv_ret_type){
     7 	        if (lt_methods[lv_i].getName().toString() == iv_name) {
     8 	            var lt_par_type = lt_methods[lv_i].getParameterTypes();
