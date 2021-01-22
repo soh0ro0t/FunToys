@@ -123,3 +123,26 @@
         var test = dynamic_invoke(jODgb.class, b_meth, [Integer.valueOf(7)]);
 ```
 
+### 六、写数据到文件
+```js
+js（该方法是纯js写法，如果要写如java的obj会有问题，写简单的字符串ok）:
+    1 	    var file = new File("/data/data/com.xxx.yyy/ota.bin", "ab");
+    2 	    file.write("data");
+    4 	    file.flush();
+    5 	    file.close();
+```
+或者
+```java
+java（该方法是java写法，data类型是byte array）
+    1 	    function writeTextFileInJava(path, data) {
+    2 	        try {
+    3 	            var stream = jFileOutputStream.$new(path, true);
+    4 	            stream.write(data);
+    5 	        } catch (err) {
+    6 	    
+    7 	        }
+    8 	    }
+    9 	    var current = Date.now();
+   10 	    writeTextFileInJava("/data/data/com.xxx.yyy/" + current + '-ota.bin', byteArrayArgX);
+```
+
