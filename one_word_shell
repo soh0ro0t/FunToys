@@ -258,7 +258,7 @@ GitDiscardLocalModification() {
 }
 
 ################################################################################
-# Name	      : GetKernelVersion()
+# Name        : GetKernelVersion()
 # Description : Get kernel version from compressed kernel image
 # Input       : <kernel image>
 # Returns     : <kernel version>
@@ -266,10 +266,10 @@ GitDiscardLocalModification() {
 GetKernelVersion() {
     Display --text "[+] get kernel version from compressed kernel image"
 
-	step1="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o \$'\\\x1f\\\x8b\\\x08\\\x00\\\x00\\\x00\\\x00\\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | zcat | grep -a 'Linux version'"
+        step1="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o -e \$'\\x1f\\x8b\\x08\\x00\\x00\\x00\\x00\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | zcat | grep -a 'Linux version'"
     Display --indent 4 --text "extract from gzip-encoded image: " --color RED --result "${step1}"
 
-	step2="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o \$'\\\xFD\\\x37\\\x7A\\\x58\\\x5A\\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | xzcat | grep -a 'Linux version'"
+        step2="dd if=sampleImage bs=1 skip=\$(LC_ALL=C grep -a -b -o -e \$'\\xFD\\x37\\x7A\\x58\\x5A\\x00' sampleImage | head -n 1 | cut -d ':' -f 1) | xzcat | grep -a 'Linux version'"
     Display --indent 4 --text "extract from xz-encoded image: " --color RED --result "${step2}"
     echo "\n"
 }
