@@ -1,0 +1,30 @@
+// print memory data 
+void print_hex(char *data, uint length) {
+	int i = 0, j = 0;
+	char last_stuff[16] = {0};
+
+	while (1) {
+		for (; j < 16 && i < length && data[i]; j++, i++) {
+			printf("%02X ", data[i]);
+		}
+
+		if (i == length) {
+			int n = length % 16;
+			memcpy(last_stuff, data + length -n , n);
+			printf("%*s", (16 - n) * 2 + 8, "");
+			printf("|%.16s|", last_stuff);
+			return;
+		}
+
+		if (!data[i]) {
+			int n = i % 16;
+			memcpy(last_stuff, data + i/16 * 16, n);
+			printf("%*s", (16 - n) * 2 + 8, "");
+			printf("|%.16s|\n", last_stuff);
+			return;
+		}
+
+		j %= 0x10;
+		printf("|%.16s|\n", &data[i-16]);
+	}
+}
