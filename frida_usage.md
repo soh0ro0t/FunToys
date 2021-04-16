@@ -156,3 +156,97 @@ java（该方法是java写法，data类型是byte array）
 # now we are capable to hook the device specified by @devId
 session = frida.get_device_manager().add_remote_device("127.0.0.1:%s" % str(9999)).attach('com.test.app')
 ```
+
+### 八、frida hook native函数
+```java
+假定存在testLib/testAPI接口的定义：int32_t testAPI(int32 id, some_struct *data)
+其中some_struct的定义如下：
+typedef struct {
+    const char *filesL[500];
+    const char *filesR[500];
+    int fileN;
+    const char *user;
+    short type;
+    int8_t tflag;
+    int8_t sflag;
+    int8_t unuse;
+} some_struct;
+
+下面hook该函数并解析some_struct数据：
+function myGetPointer(address) {
+    var ptr = new NativePointer(address);
+    var val = ptr.readPointer();
+    return val;
+}
+
+function myGetCharStar(address) {
+    var ptr = new NativePointer(address);
+    var val = ptr.readPointer();
+    if (val)
+        return val.readCString();
+    else
+        return null;
+}
+
+function processSomeStruct(data) {
+    var buffer = Memory.readByteArray(data, 1000*8+8+8+2+1+1+1); 
+    var some_struct = new DataView(buffer);
+
+    var fileN = some_struct.getInt32(1000*8, true);
+    var type = some_struct.getUint16(1000*8+8+8, true);
+    var tflag = some_struct.getUint8(1000*8+8+8+2, true);
+    var sflag = some_struct.getUint8(1000*8+8+8+2+1, true);
+    var unuse = some_struct.getUint8(1000*8+8+8+2+1+1, true);
+
+    var filesL = "{";
+    for (var i=0;i<fileN;i++)
+    { 
+        var ptr_file_array_ele = myGetCharStar(data.add(i*8));;
+        filesL += ptr_file_array_ele;
+        if (i != fileN -1) {
+            filesL += ', ';
+        }
+    }
+    filesL += '}';
+    
+    var filesR = "{";
+    for (var i=0;i<fileN;i++)
+    { 
+        var filesREle = myGetCharStar(data.add(500*8 + i*8));;
+        filesR += filesREle;
+        if (i != fileN -1) {
+            filesR += ', ';
+        }
+    }
+    filesR += '}';
+
+    console.log('[+] NSTACKX_filesLInfo -----------------------------');
+    console.log('[+] filesL         --> ' + filesL);
+    console.log('[+] filesR    --> ' + filesR);
+    console.log('[+] fileN       --> 0x' + fileN.toString(16));
+    console.log('[+] user      --> ' + myGetCharStar(data.add(1000*8+8)));
+    console.log('[+] type      --> 0x' + type.toString(16));
+    console.log('[+] tflag       --> 0x' + tflag.toString(16));
+    console.log('[+] sflag     --> 0x' + sflag.toString(16));
+    console.log('[+] unuse         --> 0x' + unuse.toString(16));
+}
+
+Java.perform(function () {
+	setImmediate(function() {
+		Interceptor.attach(Module.findExportByName("testLib.so" , "testAPI"), {
+			onEnter: function(args) {
+				console.log("testAPI called! args[0]:" + args[0]);
+				console.log("testAPI called! args[1]:" + args[1]);
+				processSomeStruct(args[1]);
+			},
+			onLeave:function(retval){
+				console.log(retval);
+			}
+		});
+	});
+});
+
+特别注意几点坑：
+1. 指针移位 不是 直接(pointerX + offset)来表示，这种方式只是做拼接，实际上应该使用pointerX.add(offset)
+2. 目前没有很好的方案解析结构体数据，临时方案可以使用DataView()，但是DataView无法读取64位数据，需要自己定义函数解决，另外解析结构体需要挨着设置成员偏移，所以一定要注意内存对其，不然偏移算错就错位了。
+```
