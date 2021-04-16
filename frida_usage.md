@@ -154,5 +154,5 @@ java（该方法是java写法，data类型是byte array）
 # in this case, starting frida server with binding address of '0.0.0.0:9999' firstly.
 # and then redirecting traffic from device to local host using 'adb -s devId forward tcp:9999 tcp:9999'
 # now we are capable to hook the device specified by @devId
-session = frida.get_device_manager().add_remote_device("127.0.0.1:%s" % str(9999)).attach('com.huawei.nearby')
+session = frida.get_device_manager().add_remote_device("127.0.0.1:%s" % str(9999)).attach('com.test.app')
 ```
