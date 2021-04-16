@@ -145,4 +145,14 @@ java（该方法是java写法，data类型是byte array）
     9 	    var current = Date.now();
    10 	    writeTextFileInJava("/data/data/com.xxx.yyy/" + current + '-ota.bin', byteArrayArgX);
 ```
+### 七、frida 同时hook多个设备
+```java
+# It works when there's only one device
+#session = frida.get_usb_device().attach('com.test.app')
 
+# Resolving hooking multiple devices issue since get_usb_device interface can not recongize device by servialno  
+# in this case, starting frida server with binding address of '0.0.0.0:9999' firstly.
+# and then redirecting traffic from device to local host using 'adb -s devId forward tcp:9999 tcp:9999'
+# now we are capable to hook the device specified by @devId
+session = frida.get_device_manager().add_remote_device("127.0.0.1:%s" % str(9999)).attach('com.huawei.nearby')
+```
