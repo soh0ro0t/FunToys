@@ -220,7 +220,7 @@ function processSomeStruct(data) {
     }
     filesR += '}';
 
-    console.log('[+] NSTACKX_filesLInfo -----------------------------');
+    console.log('[+] some_struct -----------------------------');
     console.log('[+] filesL         --> ' + filesL);
     console.log('[+] filesR    --> ' + filesR);
     console.log('[+] fileN       --> 0x' + fileN.toString(16));
