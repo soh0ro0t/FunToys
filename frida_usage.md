@@ -251,3 +251,13 @@ Java.perform(function () {
 2. 目前没有很好的方案解析结构体数据，临时方案可以使用DataView()，但是DataView无法读取64位数据，需要自己定义函数解决，
    另外解析结构体需要挨个设置成员偏移，所以一定要注意内存对其，不然偏移算错就错位了。
 ```
+
+### 九、打印堆栈
+```java
+打印java堆栈：
+clsLog = Java.use("android.util.Log")
+clsException = Java.use("java.lang.Exception")
+function printStackTrace() {
+  console.log(clsLog .getStackTraceString(clsException .$new()));
+}
+```
