@@ -223,7 +223,7 @@ search_by_devtype() {
         dev_type=$1
         Display --indent 4 --text "[+] search by device type" --color BLUE --result ""
         if [ "dev_type"== *"character"* ];then
-                # try to search misc device register code snippet 
+                # try to search registering code snippet of misc device 
                 result=$(find $dir -path ".*/kernel/drivers"  -exec grep -r  -E 'misc_register\(&"$filename"'  {} \;)
                 if [ $? -eq 0 ];then
                         Display --indent 4 --text "[+] $result" --color BLUE --result ""
@@ -238,7 +238,7 @@ search_by_devtype() {
 
 search_by_force() {
         target=$1
-        # search by name assignment snippet code
+        # search by device name assignment snippet code with given name
         result=$(find $dir -type f -regextype posix-extended -regex '.*\.(c|h)' -exec grep 'name = "$target"' {} \;)
         if [ $? -eq 0 ];then
                 Display --indent 4 --text "[+] $result" --color BLUE --result ""
