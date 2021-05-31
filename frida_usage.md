@@ -261,3 +261,85 @@ function printStackTrace() {
   console.log(clsLog .getStackTraceString(clsException .$new()));
 }
 ```
+### 十、frida追踪任意方法的通用代码
+```js
+	rpc.exports = {
+		initTraceFunction: function(funcName, argTypeList) {
+			if (!funcName.contains('.'))
+				traceNativeFunction(funcName, argTypeList);
+			else
+				traceJavaFunction(funcName, argTypeList);
+		},
+		traceNativeFunction: function(funcName, argTypeList) {
+
+		},
+		traceJavaFunction: function(funcName, funcArgs) {
+			Java.perform(function () {
+				var shouldHook = true;
+				var idx = funcName.lastIndexOf('.');
+				if (idx && idx != funcName.length) {
+					var className = funcName.substr(0, idx)
+					var funcBaseName = funcName.substr(idx + 1)
+					var jClazz = Java.use(className);
+
+					for (var index in jClazz[funcBaseName].overloads) {
+					
+						var method_overload = jClazz[funcBaseName].overloads[index];
+						
+						// 该判断无效，恒为false
+						//if (method_overload.hasOwnProperty('argumentTypes')) {
+							var msg = "Hooking class: " + className + " Fcuntion: " + funcBaseName;
+							var argTypes = [];
+							var paraIndex = 0;
+
+							for(var j in method_overload.argumentTypes) {
+								argTypes.push(method_overload.argumentTypes[j].className);
+							}
+
+							// Check if we are looking for a specific overload
+							if (funcArgs != undefined) {
+								shouldHook = false;
+								if (method_overload.argumentTypes.length == funcArgs.length) {
+									var sameArgsCount = 0;
+									for (var i in method_overload.argumentTypes) {
+										if (method_overload.argumentTypes[i].className == funcArgs[i])
+											sameArgsCount++;
+										else
+											break;
+									}
+
+									if (sameArgsCount == funcArgs.length) 
+										shouldHook = true;
+								}
+							}
+
+							if (shouldHook) {
+								// 使用转义符，否则报错“SyntaxError: unexpected end of string”
+								send(msg + '(' + argTypes.toString() + ')\\n');
+								try {
+									method_overload.implementation = function() {
+										var args = [].slice.call(arguments)
+										var result = this[funcBaseName].apply(this, args);
+										var rstr = result.toString();
+										var delimiter = "|";
+										var msg = delimiter + className + delimiter + funcBaseName + '(' + args.join(', ') + ') => return: ' + rstr;
+										sendLog(msg);
+										sendCallingStack();
+										return result;
+									}
+								} catch(e) {
+									sendError("Hook ERROR: " + e);
+								}
+							}
+						//}
+					}
+				}
+			})
+		}	
+	}	
+```
+```js
+script.exports.trace_java_function("android.app.Activity.startActivity", ["android.content.Intent"])
+script.exports.trace_java_function("java.io.InputStream.read", ["[B", "int", "int"]);
+script.exports.trace_java_function("android.text.TextUtils.equals", ["java.lang.CharSequence", "java.lang.CharSequence"])
+```
