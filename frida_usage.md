@@ -343,3 +343,28 @@ script.exports.trace_java_function("android.app.Activity.startActivity", ["andro
 script.exports.trace_java_function("java.io.InputStream.read", ["[B", "int", "int"]);
 script.exports.trace_java_function("android.text.TextUtils.equals", ["java.lang.CharSequence", "java.lang.CharSequence"])
 ```
+
+### 十、打印intent
+```js
+	function showIntent(intent) {
+		var data = intent.getData();
+		sendDebug(delimiter + "show intent" + delimiter + intent.toString());
+		sendDebug(delimiter + 'show intent data' + delimiter + data);
+
+		var bundle = intent.getExtras();
+		if (bundle != null) {
+			var str = '\\n\\t{\\n';
+			var keys = bundle.keySet();
+			var it = keys.iterator();
+			while (it.hasNext()) {
+				var key = it.next();
+				str += '\\t\\t' + key;
+				str += ':';
+				str += bundle.get(key);
+				str += "\\n";
+			}
+			str += '\\t}';
+			sendDebug(delimiter + 'show intent extra' + delimiter + str);
+		}
+	}
+```
