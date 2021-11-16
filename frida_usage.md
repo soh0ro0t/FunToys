@@ -368,3 +368,8 @@ script.exports.trace_java_function("android.text.TextUtils.equals", ["java.lang.
 		}
 	}
 ```
+### 十一、hook内部私有对象的某个回调
+```js
+比如开源组件RePlugin的com.qihoo360.loader2.PmBase类中存在mBroadcastReceiver私有成员，如果要hook其回调方法onReceive该怎么做？
+类似于内部类，区别是内部类使用"$内部类名"进行引用，而私有成员对象使用"$数字"进行引用，比如此处事例为com.qihoo360.loader2.PmBase$1.onReceive
+```
