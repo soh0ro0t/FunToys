@@ -373,3 +373,105 @@ script.exports.trace_java_function("android.text.TextUtils.equals", ["java.lang.
 比如开源组件RePlugin的com.qihoo360.loader2.PmBase类中存在mBroadcastReceiver私有成员，如果要hook其回调方法onReceive该怎么做？
 类似于内部类，区别是内部类使用"$内部类名"进行引用，而私有成员对象使用"$数字"进行引用，比如此处事例为com.qihoo360.loader2.PmBase$1.onReceive
 ```
+
+### 十二、hook某个类中所有方法
+```js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function traceMethod(targetClassMethod) {
+    var delim = targetClassMethod.lastIndexOf('.');
+    if (delim === -1)
+        return;
+
+    var targetClass = targetClassMethod.slice(0, delim);
+    var targetMethod = targetClassMethod.slice(delim + 1, targetClassMethod.length);
+
+    var hook = Java.use(targetClass);
+    var overloadCount = hook[targetMethod].overloads.length;
+
+    for (var i = 0; i < overloadCount; i++) {
+		// hook function 
+        hook[targetMethod].overloads[i].implementation = function () {
+            var log = { '#': targetClassMethod, args: [] };
+
+            for (var j = 0; j < arguments.length; j++) {
+                var arg = arguments[j];
+                // quick&dirty fix for java.io.StringWriter char[].toString() impl because frida prints [object Object]
+                if (j === 0 && arguments[j]) {
+                    if (arguments[j].toString() === '[object Object]') {
+                        var s = [];
+                        for (var k = 0, l = arguments[j].length; k < l; k++) {
+                            s.push(arguments[j][k]);
+                        }
+                        arg = s.join('');
+                    }
+                }
+                log.args.push({ i: j, o: arg, s: arg ? arg.toString(): 'null'});
+            }
+
+            var retval;
+            try {
+                retval = this[targetMethod].apply(this, arguments); // might crash (Frida bug?)
+                log.returns = { method: targetClassMethod, val: retval ? retval.toString() : null };
+            } catch (e) {
+                console.error(e);
+            }
+            LOG(log, { c: Color.Blue});
+            return retval;
+        }
+    }
+}
+
+function hookAllMethodsOfClass(name) {
+	var hookCls = Java.use(name);
+	var ownMethods = hookCls.class.getDeclaredMethods();
+	ownMethods.forEach(function(method) {
+		var methodStr = method.toString();
+		var methodReplace = methodStr.replace(name+ ".", "TOKEN").match(/\sTOKEN(.*)\(/)[1];
+		var fullMethodName = name + '.' + methodReplace
+		LOG({ tracing: fullMethodName, overloaded: 1}, { c: Color.Green });
+		traceMethod(fullMethodName);
+	});
+} 
+```
