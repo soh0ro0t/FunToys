@@ -376,49 +376,6 @@ script.exports.trace_java_function("android.text.TextUtils.equals", ["java.lang.
 
 ### 十二、hook某个类中所有方法
 ```js
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function traceMethod(targetClassMethod) {
     var delim = targetClassMethod.lastIndexOf('.');
     if (delim === -1)
