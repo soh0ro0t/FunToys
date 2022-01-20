@@ -431,4 +431,35 @@ function hookAllMethodsOfClass(name) {
 		traceMethod(fullMethodName);
 	});
 } 
+
+### 十三、使用runnable调用某个接口
+// ===============================================================================================================
+// android.webkit.WebView getSettings (仅能为已经存在的webview开启调试，不包括新建的webview)
+// ===============================================================================================================
+Java.choose("android.webkit.WebView", {
+	"onMatch": function(o) {
+		try {
+			// Use a Runnable to invoke the setWebContentsDebuggingEnabled
+			// method in the same thread as the WebView
+			var Runnable = Java.use('java.lang.Runnable');
+			var MyRunnable = Java.registerClass({
+				name: 'com.example.MyRunnable',
+				implements: [Runnable],
+				methods: {
+					'run': function() {
+						o.setWebContentsDebuggingEnabled(true);
+						console.log('[*] Switch WebView debuggable');
+					}
+				}
+			});
+			var runnable = MyRunnable.$new();
+			o.post(runnable);
+		} catch (e) {
+			console.log("[!] execution failed: " + e.message);
+		}
+	},
+	"onComplete": function() {
+		console.log("[*] Whoa! all webview instances debuggable")
+	}
+})
 ```
