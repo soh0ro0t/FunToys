@@ -431,7 +431,7 @@ function hookAllMethodsOfClass(name) {
 		traceMethod(fullMethodName);
 	});
 } 
-
+```
 ### 十三、使用runnable调用某个接口
 // ===============================================================================================================
 // android.webkit.WebView getSettings (仅能为已经存在的webview开启调试，不包括新建的webview)
