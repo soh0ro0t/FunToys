@@ -463,3 +463,52 @@ Java.choose("android.webkit.WebView", {
 	}
 })
 ```
+
+### 十四、 遍历对象并打印所有的成员
+```javascript
+function dumpAllFieldValue(obj) {
+    if (obj === null) {
+        return;
+    }
+
+    console.log("Dump all fields value for  " + obj.getClass() + " :");
+
+    var cls = obj.getClass();
+
+    while (cls !== null && !cls.equals(Java.use("java.lang.Object").class)) {
+        var fields = cls.getDeclaredFields();
+        if (fields === null || fields.length === 0) {
+            cls = cls.getSuperclass();
+            continue;
+        }
+
+        if (!cls.equals(obj.getClass())) {
+            console.log("Dump super class  " + cls.getName() + " fields:");
+        }
+
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            field.setAccessible(true);
+            var name = field.getName();
+            var value = field.get(obj);
+            var type = field.getType();
+            console.log(type + " " + name + "=" + value);
+        }
+
+        cls = cls.getSuperclass();
+    }
+}
+```
+
+### 十五、获取对象内某个成员变量的值
+```js
+function getFieldValue(obj, fieldName) {
+    var cls = obj.getClass();
+    var field = cls.getDeclaredField(fieldName);
+    field.setAccessible(true);
+    var name = field.getName();
+    var value = field.get(obj);
+    // console.log("field: " + field + "\tname:" + name + "\tvalue:" + value);
+    return value;
+}
+```
