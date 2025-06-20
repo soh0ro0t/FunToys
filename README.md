@@ -13,7 +13,7 @@ Showing a branch of high-frequently used linux command in shell syntax.
 ![one_word_shell](https://github.com/TheBeeMan/FunToys/blob/master/images/one_word_shell.png?raw=true)
 
 ### passlogin
-Login remote ssh server with password in one time.
+Login remote ssh server with password in one command.
 
 ![passlogin](https://github.com/TheBeeMan/FunToys/blob/master/images/passlogin.png?raw=true)
 
